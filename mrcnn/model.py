@@ -2129,7 +2129,7 @@ class MaskRCNN():
                                    layer_group.attrs["weight_names"]]
                         layer.set_weights(weights)
         else:
-            keras_model.load_weights(filepath)  # Default loading for all layers
+            keras_model.load_weights(filepath, skip_mismatch=True)  # Default loading for all layers
 
         if hasattr(f, 'close'):
             f.close()

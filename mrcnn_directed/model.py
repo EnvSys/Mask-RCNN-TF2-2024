@@ -14,6 +14,8 @@ import re
 import math
 import logging
 from collections import OrderedDict
+from collections.abc import Iterable
+
 import multiprocessing
 import numpy as np
 import tensorflow as tf
@@ -2254,7 +2256,9 @@ class MaskRCNNDirected():
                 if layer.name in f:
                     layer_group = f[layer.name]
                     weight_names = layer_group.attrs.get("weight_names")
-                    if hasattr(layer, 'set_weights') and weight_names is not None:
+                    if (hasattr(layer, 'set_weights')
+                            and isinstance(weight_names, Iterable)
+                            and len(weight_names) > 0):
                         weights = [layer_group[wn][:] for wn in
                                    layer_group.attrs["weight_names"]]
                         layer.set_weights(weights)

@@ -2253,7 +2253,7 @@ class MaskRCNNDirected():
             for layer in layers:
                 if layer.name in f:
                     layer_group = f[layer.name]
-                    if hasattr(layer, 'set_weights') and layer_group.attrs.get("weight_names"):
+                    if hasattr(layer, 'set_weights') and layer_group.attrs.get("weight_names").any():
                         weights = [layer_group[wn][:] for wn in
                                    layer_group.attrs["weight_names"]]
                         layer.set_weights(weights)

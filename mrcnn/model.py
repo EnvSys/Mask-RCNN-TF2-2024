@@ -2099,14 +2099,6 @@ class MaskRCNN():
         exclude: list of layer names to exclude
         """
         import h5py
-        # Conditional import to support versions of Keras before 2.2
-        # TODO: remove in about 6 months (end of 2018)
-        try:
-            from keras.engine import saving
-        except ImportError:
-            # Keras before 2.2 used the 'topology' namespace.
-            from keras.engine import topology as saving
-
         if exclude:
             by_name = True
 
@@ -2126,10 +2118,18 @@ class MaskRCNN():
         if exclude:
             layers = filter(lambda l: l.name not in exclude, layers)
 
+        # Load weights
         if by_name:
-            saving.load_weights_from_hdf5_group_by_name(f, layers)
+            for layer in layers:
+                if layer.name in f:
+                    layer_group = f[layer.name]
+                    if hasattr(layer, 'set_weights') and layer_group.attrs.get("weight_names"):
+                        weights = [layer_group[wn][:] for wn in
+                                   layer_group.attrs["weight_names"]]
+                        layer.set_weights(weights)
         else:
-            saving.load_weights_from_hdf5_group(f, layers)
+            keras_model.load_weights(filepath)  # Default loading for all layers
+
         if hasattr(f, 'close'):
             f.close()
 

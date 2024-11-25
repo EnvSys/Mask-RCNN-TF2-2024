@@ -2126,8 +2126,11 @@ class MaskRCNN():
                     layer_group = f[layer.name]
                     weight_names = layer_group.attrs.get("weight_names")
                     if hasattr(layer, 'set_weights') and isinstance(weight_names, Iterable) and len(weight_names) > 0:
-                        weights = [layer_group[wn][:] for wn in
-                                   layer_group.attrs["weight_names"]]
+                        # Decode byte strings if necessary
+                        if isinstance(weight_names[0], bytes):
+                            weight_names = [wn.decode("utf-8") for wn in weight_names]
+
+                        weights = [layer_group[wn][:] for wn in weight_names]
                         layer.set_weights(weights)
         else:
             keras_model.load_weights(filepath, skip_mismatch=True)  # Default loading for all layers

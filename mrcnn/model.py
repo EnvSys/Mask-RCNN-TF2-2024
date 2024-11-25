@@ -2119,10 +2119,13 @@ class MaskRCNN():
         if exclude:
             layers = filter(lambda l: l.name not in exclude, layers)
 
+        print("Model layers:")
+        print([layer.name for layer in layers])
         # Load weights
         if by_name:
             for layer in layers:
                 if layer.name in f:
+                    print(f"Layer name is {layer.name}")
                     layer_group = f[layer.name]
                     weight_names = layer_group.attrs.get("weight_names")
                     if hasattr(layer, 'set_weights') and isinstance(weight_names, Iterable) and len(weight_names) > 0:
